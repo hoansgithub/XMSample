@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "XMHeaderView.h"
 @class XMTableView;
 @protocol XMTableviewDelegate<NSObject>
 - (NSUInteger)numberOfSectionsInXMTableView:(XMTableView *)tableView;
@@ -18,6 +19,13 @@
 - (NSInteger)xmTableView:(XMTableView *)tableView numberOfItemForCellIndexPath:(NSIndexPath *)indexPath;
 
 - (NSInteger)xmTableView:(XMTableView *)tableView heightForSubHeaderAtCellIndexPath:(NSIndexPath *)indexPath;
+
+- (void)xmTableView:(XMTableView *)tableView willDisplayItem:(UICollectionViewCell *)collectionViewCell atIndex:(NSInteger)index forCellIndexPath:(NSIndexPath *)indexPath;
+
+- (void)xmTableView:(XMTableView *)tableView didSelectSubHeaderAtCellIndexPath:(NSIndexPath *)indexPath;
+- (void)xmTableView:(XMTableView *)tableView didSelectHeaderInSection:(NSInteger)section;
+- (void)xmTableView:(XMTableView *)tableView willDisplayHeaderView:(XMHeaderView *)view forSection:(NSInteger)section;
+- (void)xmTableView:(XMTableView *)cell didSelectItemAtIndex:(NSInteger)index forCellIndexPath:(NSIndexPath *)indexPath;
 @end
 
 @interface XMTableView : UIView

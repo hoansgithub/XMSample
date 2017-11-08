@@ -9,7 +9,8 @@
 #import "SampleViewController.h"
 #import "XMTableView.h"
 #import "UIView+LayoutConstraint.h"
-@interface SampleViewController ()<XMTableviewDelegate>
+#import "CarouselizedCell.h"
+@interface SampleViewController ()<XMTableviewDelegate,CarouselizedCellDelegate>
 @property (strong , nonatomic) XMTableView *xmTableView;
 @end
 
@@ -42,6 +43,11 @@
 }
 
 #pragma mark -XMTableviewDelegate
+
+- (void)xmTableView:(XMTableView *)tableView didSelectSubHeaderAtCellIndexPath:(NSIndexPath *)indexPath {
+    
+}
+
 - (NSUInteger)numberOfSectionsInXMTableView:(XMTableView *)tableView {
     return 4;
 }
@@ -151,11 +157,16 @@
 }
 
 - (Class)xmTableView:(XMTableView *)tableView itemClassForCellIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
+        return [CarouselizedCell class];
+    }
     return [UICollectionViewCell class];
 }
 
 - (NSInteger)xmTableView:(XMTableView *)tableView numberOfItemForCellIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
+        case 0:
+            return 1;
         case 1:
             return 6;
         case 2:
@@ -187,5 +198,50 @@
     }
     
 }
+
+- (void)xmTableView:(XMTableView *)tableView willDisplayItem:(UICollectionViewCell *)collectionViewCell atIndex:(NSInteger)index forCellIndexPath:(NSIndexPath *)indexPath {
+    if ([collectionViewCell isKindOfClass:[CarouselizedCell class]]) {
+        CarouselizedCell *cell = (CarouselizedCell *)collectionViewCell;
+        cell.delegate = self;
+        [cell reloadData];
+    }
+}
+
+- (void)xmTableView:(XMTableView *)tableView willDisplayHeaderView:(XMHeaderView *)view forSection:(NSInteger)section {
+    if (section == 1) {
+        view.lblDesc.text = @"ZAZA";
+    }
+}
+
+- (void)xmTableView:(XMTableView *)tableView didSelectHeaderInSection:(NSInteger)section {
+    
+}
+
+- (void)xmTableView:(XMTableView *)cell didSelectItemAtIndex:(NSInteger)index forCellIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"item  %ld ---- section %ld   ===  %ld", (long)index,(long)indexPath.section, (long)indexPath.row,nil);
+}
+
+#pragma mark -CarouselizedCellDelegate
+- (void)carouselizedCell:(CarouselizedCell *)cell willDisplayItemAtIndex:(NSInteger)index usingView:(UIView *)view {
+    
+}
+
+- (UIView *)carouselizedCell:(CarouselizedCell *)cell viewForItemAtIndex:(NSInteger)index {
+    UIImage *img = [UIImage imageNamed:@"temp"];
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:img];
+    imgView.contentMode = UIViewContentModeScaleToFill;
+    imgView.frame = cell.frame;
+    
+    return imgView;
+}
+
+- (void)carouselizedCell:(CarouselizedCell *)cell didSelectItemAtIndex:(NSInteger)index {
+    
+}
+
+- (NSInteger)numberOfItemInCarouselizedCell:(CarouselizedCell *)cell {
+    return 5;
+}
+
 
 @end

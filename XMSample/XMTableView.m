@@ -9,6 +9,7 @@
 #import "XMTableView.h"
 #import "UIView+LayoutConstraint.h"
 #import "XMTableViewCell.h"
+#import "XMHeaderView.h"
 @interface XMTableView()<UITableViewDelegate ,  UITableViewDataSource, XMTableViewCellDelegate>
 @property (strong, nonatomic) UITableView *tableView;
 
@@ -35,7 +36,7 @@
     _tableView.dataSource = self;
     _tableView.delegate = self;
     [_tableView registerClass:[XMTableViewCell class] forCellReuseIdentifier:@"cell"];
-    [_tableView registerClass:[UITableViewHeaderFooterView class] forHeaderFooterViewReuseIdentifier:@"header"];
+    [_tableView registerClass:[XMHeaderView class] forHeaderFooterViewReuseIdentifier:@"header"];
     
     [self addConstraintsWithVisualFormat:@"V:|[v0]|" views:_tableView, nil];
     [self addConstraintsWithVisualFormat:@"H:|[v0]|" views:_tableView, nil];
@@ -93,10 +94,39 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    UITableViewHeaderFooterView *cell = (UITableViewHeaderFooterView *)[tableView dequeueReusableHeaderFooterViewWithIdentifier:@"header"];
-    cell.textLabel.text = [NSString stringWithFormat:@"sec %ld", (long)section];
+    XMHeaderView *cell = (XMHeaderView *)[tableView dequeueReusableHeaderFooterViewWithIdentifier:@"header"];
+    cell.lblText.text = [NSString stringWithFormat:@"sec %ld", (long)section];
+    cell.lblDesc.text = @"details";
+    cell.lblDesc.textColor = [UIColor greenColor];
+    cell.section = section;
+    //gesture
+    if (cell.gestureRecognizers.count > 0) {
+        [cell removeGestureRecognizer:cell.gestureRecognizers.firstObject];
+    }
+    //header tap recognizer
+    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleHeaderTap:)];
+    recognizer.numberOfTapsRequired = 1;
+    recognizer.numberOfTouchesRequired = 1;
+    cell.userInteractionEnabled = YES;
+    [cell addGestureRecognizer:recognizer];
+    
     return  cell;
 }
+
+-(void) handleHeaderTap:(UIGestureRecognizer *)gestureRecognizer {
+    XMHeaderView *cell = (XMHeaderView *)gestureRecognizer.view;
+    NSInteger section = cell.section;
+    if (self.delegate) {
+        [self.delegate xmTableView:self didSelectHeaderInSection:section];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    if (self.delegate) {
+        [self.delegate xmTableView:self willDisplayHeaderView:(XMHeaderView *)view forSection:section];
+    }
+}
+
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     XMTableViewCell *mCell = (XMTableViewCell *)cell;
@@ -106,6 +136,8 @@
     [mCell setCollectionViewOffset:offset];
 }
 
+
+
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     XMTableViewCell *mCell = (XMTableViewCell *)cell;
     _storedOffsets[indexPath] = @([mCell collectionViewOffset]);
@@ -113,6 +145,19 @@
 }
 
 #pragma mark -XMTableViewCellDelegate
+
+- (void)xmTableViewCell:(XMTableViewCell *)cell didSelectItemAtIndex:(NSInteger)index forCellIndexPath:(NSIndexPath *)indexPath {
+    if (self.delegate) {
+        [self.delegate xmTableView:self didSelectItemAtIndex:index forCellIndexPath:indexPath];
+    }
+}
+
+- (void)xmTableViewCell:(XMTableViewCell *)cell didSelectSubHeaderAtCellIndexPath:(NSIndexPath *)indexPath {
+    if (self.delegate) {
+        [self.delegate xmTableView:self didSelectSubHeaderAtCellIndexPath:indexPath];
+    }
+}
+
 - (UICollectionViewLayout *)xmTableViewCell:(XMTableViewCell *)cell layoutForCollectionViewAt:(NSIndexPath *)indexPath {
     if (_storedLayouts[indexPath] == nil && self.delegate) {
         UICollectionViewLayout *layout = [self.delegate xmTableView:self layoutForCollectionViewAt:indexPath];
@@ -146,6 +191,12 @@
         return [self.delegate xmTableView:self heightForSubHeaderAtCellIndexPath:indexPath];
     }
     return 100;
+}
+
+- (void)xmTableViewCell:(XMTableViewCell *)cell willDisplayItem:(UICollectionViewCell *)collectionViewCell atIndex:(NSInteger)index forCellIndexPath:(NSIndexPath *)indexPath {
+    if (self.delegate) {
+        [self.delegate xmTableView:self willDisplayItem:collectionViewCell atIndex:index forCellIndexPath:indexPath];
+    }
 }
 
 @end

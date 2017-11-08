@@ -1,0 +1,5 @@
+Pods/
+XMSample.xcworkspace
+Podfile.lock
+/.svn
+*.svn*
