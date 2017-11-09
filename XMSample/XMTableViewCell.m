@@ -112,6 +112,7 @@
         //header
         _csHeaderHeight.constant = [self.delegate xmTableViewCell:self heightForSubHeaderAtCellIndexPath:_tableViewCellIndexPath];
         _subHeader.lblText.text = @"TEST";
+        _subHeader.lblDesc.text = @"TEST/@/@";
         //appearance
         Class cellClass = [self.delegate xmTableViewCell:self itemClassForCellIndexPath:_tableViewCellIndexPath];
         if ([cellClass isSubclassOfClass:[UICollectionViewCell class]]) {

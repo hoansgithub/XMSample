@@ -25,10 +25,14 @@
 - (void)xmTableView:(XMTableView *)tableView didSelectSubHeaderAtCellIndexPath:(NSIndexPath *)indexPath;
 - (void)xmTableView:(XMTableView *)tableView didSelectHeaderInSection:(NSInteger)section;
 - (void)xmTableView:(XMTableView *)tableView willDisplayHeaderView:(XMHeaderView *)view forSection:(NSInteger)section;
-- (void)xmTableView:(XMTableView *)cell didSelectItemAtIndex:(NSInteger)index forCellIndexPath:(NSIndexPath *)indexPath;
+- (void)xmTableView:(XMTableView *)tableView didSelectItemAtIndex:(NSInteger)index forCellIndexPath:(NSIndexPath *)indexPath;
+
+- (void)xmTableviewDidRequestDataRefreshing:(XMTableView *)tableView;
 @end
 
 @interface XMTableView : UIView
+@property (strong, nonatomic, readonly) UIRefreshControl *refreshControl;
 @property (weak, nonatomic) id<XMTableviewDelegate> delegate;
 - (void)reloadData;
+- (void)endRefreshing;
 @end

@@ -23,12 +23,12 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self setupComponents];
+        [self setupViewComponents];
     }
     return self;
 }
 
-- (void)setupComponents {
+- (void)setupViewComponents {
     _storedOffsets = [NSMutableDictionary new];
     _storedLayouts = [NSMutableDictionary new];
     _tableView = [UITableView new];
@@ -41,11 +41,38 @@
     [self addConstraintsWithVisualFormat:@"V:|[v0]|" views:_tableView, nil];
     [self addConstraintsWithVisualFormat:@"H:|[v0]|" views:_tableView, nil];
     
+    //refresh control
+    _refreshControl = [UIRefreshControl new];
+    _refreshControl.backgroundColor = [UIColor whiteColor];
+    _refreshControl.tintColor = [UIColor greenColor];
+    [_refreshControl addTarget:self action:@selector(refreshTableView) forControlEvents:UIControlEventValueChanged];
+    [_tableView addSubview:_refreshControl];
+}
+
+- (void)refreshTableView {
+    //request to refresh data
+    if (self.delegate) {
+        [self.delegate xmTableviewDidRequestDataRefreshing:self];
+    }
+    
+    if (self.refreshControl) {
+        
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"MMM d, h:mm a"];
+        NSString *title = [NSString stringWithFormat:@"Last update: %@", [formatter stringFromDate:[NSDate date]]];
+        NSDictionary *attrsDictionary = [NSDictionary dictionaryWithObject:[UIColor whiteColor]
+                                                                    forKey:NSForegroundColorAttributeName];
+        NSAttributedString *attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attrsDictionary];
+        self.refreshControl.attributedTitle = attributedTitle;
+    }
+}
+
+- (void)endRefreshing {
+    [self.refreshControl endRefreshing];
 }
 
 - (void)reloadData {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [_tableView reloadData];
         [_tableView setNeedsLayout];
         [_tableView layoutIfNeeded];
         [_tableView reloadData];

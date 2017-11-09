@@ -22,16 +22,17 @@
     UIColor *bg = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
     self.view.backgroundColor = bg;
     self.automaticallyAdjustsScrollViewInsets = NO;
-    [self setupViewComponents];
 }
 
 - (void)setupViewComponents {
-    _xmTableView = [XMTableView new];
-    [self.view addSubview:_xmTableView];
-    [self.view addConstraintsWithVisualFormat:@"V:|[v0]|" views:_xmTableView,nil];
-    [self.view addConstraintsWithVisualFormat:@"H:|[v0]|" views:_xmTableView,nil];
-    _xmTableView.delegate = self;
-    [_xmTableView reloadData];
+    if (_xmTableView == nil) {
+        _xmTableView = [XMTableView new];
+        [self.view addSubview:_xmTableView];
+        [self.view addConstraintsWithVisualFormat:@"V:|[v0]|" views:_xmTableView,nil];
+        [self.view addConstraintsWithVisualFormat:@"H:|[v0]|" views:_xmTableView,nil];
+        _xmTableView.delegate = self;
+        [_xmTableView reloadData];
+    }
 }
 
 - (void)tabbarDidLeaveCurrentView {
@@ -39,10 +40,15 @@
 }
 
 - (void)tabBarDidSelectCurrentView {
-    
+    [self setupViewComponents];
 }
 
 #pragma mark -XMTableviewDelegate
+
+- (void)xmTableviewDidRequestDataRefreshing:(XMTableView *)tableView {
+    [_xmTableView reloadData];
+    [_xmTableView endRefreshing];
+}
 
 - (void)xmTableView:(XMTableView *)tableView didSelectSubHeaderAtCellIndexPath:(NSIndexPath *)indexPath {
     

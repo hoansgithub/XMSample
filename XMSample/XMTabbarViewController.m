@@ -10,6 +10,7 @@
 #import "UIView+LayoutConstraint.h"
 #import "UIImage+Ext.h"
 #import "SampleViewController.h"
+#import "SampleNavController.h"
 @interface XMTabbarViewController ()
 @property (strong, nonatomic) UITabBar *tbarMain;
 @property (strong, nonatomic) UIScrollView *scrollView;
@@ -53,16 +54,17 @@
     
     // init view controllers
     _viewControllers = [NSMutableArray<XMTabbarViewItemProtocol> new];
+    
     _vcDiscover = [SampleViewController new];
     _vcTopic = [SampleViewController new];
     _vcRadio = [SampleViewController new];
     _vcSearch = [SampleViewController new];
     _vcAccount = [SampleViewController new];
-    [_viewControllers addObject:_vcDiscover];
-    [_viewControllers addObject:_vcTopic];
-    [_viewControllers addObject:_vcRadio];
-    [_viewControllers addObject:_vcSearch];
-    [_viewControllers addObject:_vcAccount];
+    [_viewControllers addObject:[[SampleNavController alloc] initWithRootViewController:_vcDiscover]];
+    [_viewControllers addObject:[[SampleNavController alloc] initWithRootViewController:_vcTopic]];
+    [_viewControllers addObject:[[SampleNavController alloc] initWithRootViewController:_vcRadio]];
+    [_viewControllers addObject:[[SampleNavController alloc] initWithRootViewController:_vcSearch]];
+    [_viewControllers addObject:[[SampleNavController alloc] initWithRootViewController:_vcAccount]];
     
     //view components
     id topGuide = self.topLayoutGuide;

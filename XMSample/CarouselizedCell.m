@@ -11,6 +11,7 @@
 #import "UIView+LayoutConstraint.h"
 @interface CarouselizedCell()<iCarouselDataSource, iCarouselDelegate>
     @property (strong, nonatomic) iCarousel *viewCarousel;
+@property (strong, nonatomic) NSTimer *scrollTimer;
     @end
 @implementation CarouselizedCell
 
@@ -84,6 +85,16 @@
 
 - (void)reloadData {
     [_viewCarousel reloadData];
+    if (_scrollTimer) {
+        [_scrollTimer invalidate];
+        _scrollTimer = nil;
+    }
+    _scrollTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(timerTick:) userInfo:nil repeats:YES];
+    
+}
+
+- (void)timerTick:(NSTimer *)timer {
+    [_viewCarousel scrollByNumberOfItems:1 duration:0.5];
 }
 
 @end
